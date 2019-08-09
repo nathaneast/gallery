@@ -14,8 +14,6 @@ req.onreadystatechange = function () {
 }
 req.send();
 
-
-
 function screenSet(data) {
     for (let i in data) {
         //데이터의 값 모두 식 실행
@@ -90,9 +88,14 @@ function SelectAll(btn) {
 }
 
 
+let stopSlideShow = false;
+//슬라이드쇼 정지를위한 변수
 function playSlideShow(btn) {
     let images = document.getElementsByClassName("image");
     //html에서 생성된 이미지 값을 가져옴
+
+    // btn.onclick = event.preventDefault();
+    //버튼 작동 X
 
     //배열에있는 이미지들의 마우스 기능 중단시킴
     for (let j in images) {
@@ -107,29 +110,56 @@ function playSlideShow(btn) {
         }
     }
 
+    //슬라이드쇼 정지 boolean 식
+    if (stopSlideShow == true) {
+        btn.classList.remove("btnColor");
+        stopSlideShow = false;
+        btn.value = "Slide show";
+    } else {
+        //처음 실행 값 false
+        btn.classList.add("btnColor");
+        stopSlideShow = true;
+        btn.value = "SlideShow Stop!!";
+    }
+
+
     let i = 0;
     //인덱스 값
     images[i].classList.add("image-magnified");
+    images[i].classList.add("image-Ani");
     //이미지 0번 인덱스 크기 추가
+
 
     let intervalId = setInterval(function () {
         //1초마다 식 실행
         images[i].classList.remove("image-magnified");
-        //클래스 제거
+        images[i].classList.remove("image-Ani");
+
         i++;
-        if (i < images.length) {
-            images[i].classList.add("image-magnified");
-        } else {
-            //슬라이드쇼 끝나고
+        if (stopSlideShow == false) {
+            //1번 눌럿을시 false => true = 식 실행
+            //2번 눌럿을시 true => false = 정지
             clearInterval(intervalId);
-            //매초마다 반복 종료
+        } else if (i < images.length) {
+            images[i].classList.add("image-magnified");
+            images[i].classList.add("image-Ani");
+
+        } else {
+            //슬라이드쇼 끝나고 식
+            clearInterval(intervalId);
+            //매초마다 반복하는것 종료
 
             //마우스 이벤트 재설정
             for (let j in images) {
                 mouseEvent(images[j]);
             }
-        }
-    }, 1000);
+            stopSlideShow = false;
+            btn.classList.remove("btnColor");
+            btn.value = "Slide show";
 
+        }
+
+    }, 1000);
+    console.log(stopSlideShow);
 
 }
